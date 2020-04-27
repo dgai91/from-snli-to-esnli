@@ -18,4 +18,4 @@ snli dataset and glove 840b 300d
 
 ### current progress:
 
-All infersent models are complete, you can train these models using train.py(The first time you use this project, you need to run data_process.py to generate a small glove file and dataset)
+All infersent models are complete, you can train these models using train.py (The first time you use this project, you need to run data_process.py to generate a small glove file and dataset)
