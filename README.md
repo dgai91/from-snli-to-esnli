@@ -12,7 +12,7 @@ Python 3.7 with anaconda
 
 Pytorch 1.2.0 GPU
 
-nltk with punck model
+nltk with punkt model
 
 snli dataset and glove 840b 300d
 
