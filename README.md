@@ -4,9 +4,9 @@ These days, I'm trying to reproduct SNLI and e-SNLI models as an exercise. In th
 
 First, I hope to be able to complete all the experiments in the [original paper](https://arxiv.org/abs/1705.02364). 
 
-Then, Based on the InferSent model, I will implement [e-SNLI model](https://arxiv.org/abs/1812.01193v1) and complete corresponding experiments.
+Then, based on the InferSent model, I will implement [e-SNLI model](https://arxiv.org/abs/1812.01193v1) and complete corresponding experiments.
 
-If you want to use my project in you repositories, all requirments as follow:
+If you want to use my project in your repositories, all requirments as follow:
 
     Python 3.7 with anaconda
 
