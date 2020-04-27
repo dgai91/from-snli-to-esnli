@@ -6,7 +6,7 @@ First, I hope to be able to complete all the experiments in the [original paper]
 
 Then, Based on the InferSent model, I will implement [e-SNLI model](https://arxiv.org/abs/1812.01193v1) and complete corresponding experiments.
 
-if you want to use my project in you repositories. All requirments as follow:
+If you want to use my project in you repositories, all requirments as follow:
 
 Python 3.7 with anaconda
 
@@ -18,4 +18,4 @@ snli dataset and glove 840b 300d
 
 ### current progress:
 
-all infersent models are complete, you can train these models using train.py(The first time you use this project, you need to run data_process.py to generate a small glove file and dataset)
+All infersent models are complete, you can train these models using train.py(The first time you use this project, you need to run data_process.py to generate a small glove file and dataset)
