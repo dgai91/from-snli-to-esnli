@@ -1,6 +1,5 @@
 # from-snli-to-esnli
-An snli experiment using pytorch.
-    
+  
 These days, I'm trying to reproduct SNLI and e-SNLI models as an exercise. In this project, I will accomplish the following two tasks.
 
 First, I hope to be able to complete all the experiments in the [original paper](https://arxiv.org/abs/1705.02364). 
