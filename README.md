@@ -8,13 +8,13 @@ Then, Based on the InferSent model, I will implement [e-SNLI model](https://arxi
 
 If you want to use my project in you repositories, all requirments as follow:
 
-Python 3.7 with anaconda
+    Python 3.7 with anaconda
 
-Pytorch 1.2.0 GPU
+    Pytorch 1.2.0 GPU
 
-nltk with punkt model
+    nltk with punkt model
 
-snli dataset and glove 840b 300d
+    snli dataset and glove 840b 300d
 
 ### current progress:
 
