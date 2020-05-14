@@ -39,9 +39,9 @@ def create_dataset(file_path, wd, max_len):
     return data_loader, len(torch_dataset)
 
 
-def run_model(data_loader, data_len, loss_function, optim=None):
+def run_model(data_loader, data_len, loss_function, mode='train', optim=None):
     with tqdm(total=data_len) as epoch_bar:
-        epoch_bar.set_description(f'Epoch {epoch}')
+        epoch_bar.set_description(mode + ' ')
         data_loss, data_acc = 0., 0.
         for idx, (bx, by) in enumerate(data_loader):
             bx = hot2emb(bx, emb_dict, 300)
@@ -56,7 +56,7 @@ def run_model(data_loader, data_len, loss_function, optim=None):
             data_loss += loss.item()
             if optim is not None:
                 optim.zero_grad(), loss.backward(), optim.step()
-            desc = f'Epoch {epoch} - loss {data_loss / (idx + 1):.4f}'
+            desc = mode + f' loss {data_loss / (idx + 1):.4f}'
             epoch_bar.set_description(desc)
             epoch_bar.update(bx.shape[0])
     return data_loss, data_acc
@@ -86,8 +86,8 @@ scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.2, mode='max', pa
 min_dev_loss = 1000
 with torch.autograd.set_detect_anomaly(True):
     while True:
-        train_loss, train_acc = run_model(train_loader, train_length, loss_func, optimizer)
-        dev_loss, dev_acc = run_model(dev_loader, dev_length, loss_func)
+        train_loss, train_acc = run_model(train_loader, train_length, loss_func, 'train', optimizer)
+        dev_loss, dev_acc = run_model(dev_loader, dev_length, loss_func, 'dev')
         print('Train Loss: {:.3f}, Acc: {:.3f}  Dev Loss: {:.3f}, Acc: {:.3f}'.format(
             train_loss / (train_length // 64 + 1), train_acc / train_length,
             dev_loss / (dev_length // 64 + 1), dev_acc / dev_length))
@@ -97,6 +97,6 @@ with torch.autograd.set_detect_anomaly(True):
         scheduler.step(dev_acc)
         if optimizer.state_dict()['param_groups'][0]['lr'] < 1e-5:
             break
-    test_loss, test_acc = run_model(test_loader, test_length, loss_func)
+    test_loss, test_acc = run_model(test_loader, test_length, loss_func, 'test')
     print('Test Loss: {:.3f}, Acc: {:.3f}'.format(
         test_loss / (train_length // 64 + 1), test_acc / train_length))
