@@ -1,14 +1,12 @@
 import numpy as np
 import models.config as opt
 import torch
+import os
 from torch.optim import SGD, lr_scheduler, Adam
 from torch.utils.data import TensorDataset, DataLoader
 from models.NLIModel import GNLIModel
 from torch import nn
 from tqdm import tqdm
-
-
-# TODO: bugs about embedding???
 
 
 def create_emb_dict(emb_path):
@@ -80,16 +78,24 @@ train_loader, train_length = create_dataset('dataset/train.txt', word_dict, 82)
 dev_loader, dev_length = create_dataset('dataset/dev.txt', word_dict, 82)
 test_loader, test_length = create_dataset('dataset/test.txt', word_dict, 82)
 model = GNLIModel(opt, 300).to(device)
+if os.path.exists(opt.save_path):
+    model.load_state_dict(torch.load(opt.save_path))
 loss_func = nn.CrossEntropyLoss()
-optimizer = SGD(model.parameters(), lr=0.1)
-scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.2, mode='max', patience=2)
-for epoch in range(opt.epochs):
-    train_loss, train_acc = run_model(train_loader, train_length, loss_func, optimizer)
-    dev_loss, dev_acc = run_model(dev_loader, dev_length, loss_func)
-    print('Train Loss: {:.3f}, Acc: {:.3f}  Dev Loss: {:.3f}, Acc: {:.3f}'.format(
-        train_loss / (train_length // 64), train_acc / train_length,
-        dev_loss / (dev_length // 64), dev_acc / dev_length))
-    scheduler.step(train_acc)
-test_loss, test_acc = run_model(test_loader, test_length, loss_func)
-print('Test Loss: {:.3f}, Acc: {:.3f}'.format(
-    test_loss / (train_length // 64), test_acc / train_length))
+optimizer = SGD(model.parameters(), lr=0.1, weight_decay=0.01)
+scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.2, mode='max', patience=0)
+min_dev_loss = 1000
+with torch.autograd.set_detect_anomaly(True):
+    for epoch in range(opt.epochs):
+        train_loss, train_acc = run_model(train_loader, train_length, loss_func, optimizer)
+        dev_loss, dev_acc = run_model(dev_loader, dev_length, loss_func)
+        print('Train Loss: {:.3f}, Acc: {:.3f}  Dev Loss: {:.3f}, Acc: {:.3f}'.format(
+            train_loss / (train_length // 64 + 1), train_acc / train_length,
+            dev_loss / (dev_length // 64 + 1), dev_acc / dev_length))
+        if min_dev_loss > dev_loss / (dev_length // 64 + 1):
+            min_dev_loss = dev_loss / (dev_length // 64 + 1)
+            torch.save(model.state_dict(), opt.save_path)
+        print(optimizer.state_dict()['param_groups'][0]['lr'])
+        scheduler.step(dev_acc)
+    test_loss, test_acc = run_model(test_loader, test_length, loss_func)
+    print('Test Loss: {:.3f}, Acc: {:.3f}'.format(
+        test_loss / (train_length // 64 + 1), test_acc / train_length))
