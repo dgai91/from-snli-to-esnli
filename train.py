@@ -85,7 +85,7 @@ optimizer = SGD(model.parameters(), lr=0.1, weight_decay=0.01)
 scheduler = lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.2, mode='max', patience=0)
 min_dev_loss = 1000
 with torch.autograd.set_detect_anomaly(True):
-    for epoch in range(opt.epochs):
+    while True:
         train_loss, train_acc = run_model(train_loader, train_length, loss_func, optimizer)
         dev_loss, dev_acc = run_model(dev_loader, dev_length, loss_func)
         print('Train Loss: {:.3f}, Acc: {:.3f}  Dev Loss: {:.3f}, Acc: {:.3f}'.format(
@@ -94,8 +94,9 @@ with torch.autograd.set_detect_anomaly(True):
         if min_dev_loss > dev_loss / (dev_length // 64 + 1):
             min_dev_loss = dev_loss / (dev_length // 64 + 1)
             torch.save(model.state_dict(), opt.save_path)
-        print(optimizer.state_dict()['param_groups'][0]['lr'])
         scheduler.step(dev_acc)
+        if optimizer.state_dict()['param_groups'][0]['lr'] < 1e-5:
+            break
     test_loss, test_acc = run_model(test_loader, test_length, loss_func)
     print('Test Loss: {:.3f}, Acc: {:.3f}'.format(
         test_loss / (train_length // 64 + 1), test_acc / train_length))
